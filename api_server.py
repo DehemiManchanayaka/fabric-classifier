@@ -38,8 +38,8 @@ def preprocess_image(image_bytes):
     # Resize to 256x256
     img = img.resize((256, 256))
     
-    # Convert to array and normalize
-    img_array = np.array(img) / 255.0
+    # Convert to array WITHOUT normalization (model does it internally)
+    img_array = np.array(img)  # Keep values 0-255
     
     # Add batch dimension
     img_array = np.expand_dims(img_array, axis=0)
@@ -73,9 +73,14 @@ def predict():
         print("🖼️  Preprocessing image...")
         img_array = preprocess_image(image_bytes)
         
+        print(f"   Image shape: {img_array.shape}")
+        print(f"   Value range: {img_array.min():.2f} - {img_array.max():.2f}")
+        
         # Predict
         print("🤖 Running prediction...")
         predictions = model.predict(img_array, verbose=0)
+        
+        print(f"   Raw predictions: {predictions[0]}")
         
         # Get results
         predicted_index = np.argmax(predictions[0])
